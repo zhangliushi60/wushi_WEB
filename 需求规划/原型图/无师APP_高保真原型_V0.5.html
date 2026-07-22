@@ -1,0 +1,422 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>无师APP - 高保真原型 V0.5</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'PingFang SC', 'Microsoft YaHei', sans-serif;
+            background: #F7F7F7;
+            display: flex;
+            justify-content: center;
+            padding: 20px;
+        }
+
+        .phone-frame {
+            width: 390px;
+            height: 844px;
+            background: #FFFFFF;
+            border-radius: 40px;
+            overflow: hidden;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.15);
+            position: relative;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .status-bar {
+            height: 44px;
+            background: #FFFFFF;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 0 24px;
+            font-size: 12px;
+            color: #000;
+            font-weight: 600;
+        }
+
+        .nav-bar {
+            height: 44px;
+            background: #1A6FFF;
+            color: #fff;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 17px;
+            font-weight: 600;
+        }
+
+        .content {
+            flex: 1;
+            overflow-y: auto;
+            padding: 16px;
+            background: #F7F7F7;
+        }
+
+        .bottom-tab {
+            height: 83px;
+            background: #FFFFFF;
+            display: flex;
+            align-items: flex-start;
+            justify-content: space-around;
+            padding-top: 8px;
+            border-top: 0.5px solid #E5E5E5;
+        }
+
+        .tab-item {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 4px;
+            cursor: pointer;
+        }
+
+        .tab-item span {
+            font-size: 10px;
+            color: #999;
+        }
+
+        .tab-item.active span {
+            color: #1A6FFF;
+        }
+
+        .card {
+            background: #FFFFFF;
+            border-radius: 12px;
+            padding: 16px;
+            margin-bottom: 12px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.04);
+        }
+
+        .btn-primary {
+            background: #1A6FFF;
+            color: #FFF;
+            border: none;
+            border-radius: 8px;
+            padding: 12px 24px;
+            font-size: 15px;
+            font-weight: 600;
+            cursor: pointer;
+            text-align: center;
+            display: block;
+            width: 100%;
+        }
+
+        .tag {
+            display: inline-block;
+            padding: 2px 8px;
+            border-radius: 4px;
+            font-size: 11px;
+        }
+
+        .tag-green {
+            background: #E8F8EE;
+            color: #22C55E;
+        }
+
+        .tag-orange {
+            background: #FFF5EB;
+            color: #FF8A3D;
+        }
+
+        .tag-purple {
+            background: #F3EEFF;
+            color: #8B5CF6;
+        }
+
+        .ai-badge {
+            background: linear-gradient(135deg, #8B5CF6, #6D28D9);
+            color: #FFF;
+            padding: 2px 6px;
+            border-radius: 4px;
+            font-size: 10px;
+            margin-left: 6px;
+        }
+
+        .progress-bar {
+            height: 6px;
+            background: #E5E5E5;
+            border-radius: 3px;
+            overflow: hidden;
+        }
+
+        .progress-fill {
+            height: 100%;
+            background: #1A6FFF;
+            border-radius: 3px;
+        }
+
+        .progress-fill.green {
+            background: #22C55E;
+        }
+
+        .progress-fill.orange {
+            background: #FF8A3D;
+        }
+
+        .section-title {
+            font-size: 15px;
+            font-weight: 600;
+            color: #1E1E1E;
+            margin-bottom: 12px;
+        }
+
+        .flex-row {
+            display: flex;
+            gap: 12px;
+        }
+
+        .flex-between {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .version-badge {
+            position: absolute;
+            top: 100px;
+            left: 50%;
+            transform: translateX(-50%);
+            background: #FF8A3D;
+            color: #FFF;
+            padding: 4px 12px;
+            border-radius: 12px;
+            font-size: 12px;
+            font-weight: 600;
+            z-index: 10;
+        }
+    </style>
+</head>
+<body>
+    <div class="phone-frame" id="phone">
+        <div class="version-badge">V0.5 高保真原型</div>
+        <div class="status-bar">
+            <span>9:41</span>
+            <span>屏幕时间 1h</span>
+        </div>
+        <div class="nav-bar" id="navTitle">首页</div>
+        <div class="content" id="pageContent">
+            <!-- Dynamic content injected by JS -->
+        </div>
+        <div class="bottom-tab" id="bottomTab">
+            <div class="tab-item active" onclick="renderPage('home')">
+                <div>首页</div>
+            </div>
+            <div class="tab-item" onclick="renderPage('quiz')">
+                <div>综合知识</div>
+            </div>
+            <div class="tab-item" onclick="renderPage('case')">
+                <div>案例分析</div>
+            </div>
+            <div class="tab-item" onclick="renderPage('essay')">
+                <div>论文</div>
+            </div>
+            <div class="tab-item" onclick="renderPage('profile')">
+                <div>我的</div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        const pages = {
+            home: {
+                title: '首页',
+                html: `
+                    <div class="card">
+                        <div class="flex-between" style="margin-bottom:12px">
+                            <span class="section-title">AI 备考计划</span>
+                            <span class="tag tag-purple"><span class="ai-badge">AI</span> 千人千面</span>
+                        </div>
+                        <div style="font-size:14px;color:#666;margin-bottom:8px">距离考试还有 <b style="color:#1A6FFF">87</b> 天</div>
+                        <div class="progress-bar" style="margin-bottom:8px">
+                            <div class="progress-fill" style="width:45%"></div>
+                        </div>
+                        <div style="font-size:12px;color:#999">今日任务：综合知识 30 题 / 案例 1 题</div>
+                    </div>
+                    <div class="flex-row" style="margin-bottom:12px">
+                        <div class="card" style="flex:1;text-align:center">
+                            <div style="font-size:24px;font-weight:700;color:#1A6FFF">1.5h</div>
+                            <div style="font-size:12px;color:#999">今日学习</div>
+                        </div>
+                        <div class="card" style="flex:1;text-align:center">
+                            <div style="font-size:24px;font-weight:700;color:#22C55E">72%</div>
+                            <div style="font-size:12px;color:#999">正确率</div>
+                        </div>
+                        <div class="card" style="flex:1;text-align:center">
+                            <div style="font-size:24px;font-weight:700;color:#FF8A3D">7</div>
+                            <div style="font-size:12px;color:#999">连续打卡</div>
+                        </div>
+                    </div>
+                    <div class="section-title">三科入口</div>
+                    <div class="card" onclick="renderPage('quiz')">
+                        <div class="flex-between">
+                            <div>
+                                <div style="font-size:16px;font-weight:600">综合知识</div>
+                                <div style="font-size:12px;color:#999">单选题 75 题 · 150 分钟</div>
+                            </div>
+                            <div style="text-align:right">
+                                <div class="progress-bar" style="width:80px;margin-bottom:4px">
+                                    <div class="progress-fill green" style="width:60%"></div>
+                                </div>
+                                <span style="font-size:12px;color:#999">进度 60%</span>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="card" onclick="renderPage('case')">
+                        <div class="flex-between">
+                            <div>
+                                <div style="font-size:16px;font-weight:600">案例分析 <span class="ai-badge">AI</span></div>
+                                <div style="font-size:12px;color:#999">主观题 3 题 · 90 分钟</div>
+                            </div>
+                            <div style="text-align:right">
+                                <span class="tag tag-orange">免费预览</span>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="card" onclick="renderPage('essay')">
+                        <div class="flex-between">
+                            <div>
+                                <div style="font-size:16px;font-weight:600">论文 <span class="ai-badge">AI</span></div>
+                                <div style="font-size:12px;color:#999">写作题 2500 字 · 120 分钟</div>
+                            </div>
+                            <div style="text-align:right">
+                                <span class="tag tag-orange">免费预览</span>
+                            </div>
+                        </div>
+                    </div>
+                `
+            },
+            quiz: {
+                title: '综合知识',
+                html: `
+                    <div class="card">
+                        <div class="flex-between" style="margin-bottom:12px">
+                            <span style="font-size:14px;color:#999">第 5/30 题</span>
+                            <span style="font-size:14px;color:#FF8A3D">⏱ 02:15</span>
+                        </div>
+                        <div style="font-size:15px;line-height:1.6;margin-bottom:16px;color:#1E1E1E">
+                            在信息系统项目管理中，以下哪项属于项目范围管理的核心过程？
+                        </div>
+                        <div style="display:flex;flex-direction:column;gap:8px">
+                            <div class="card" style="border:2px solid #1A6FFF;background:#F0F6FF;margin-bottom:0">A. 创建工作分解结构（WBS）</div>
+                            <div class="card" style="margin-bottom:0">B. 制定项目章程</div>
+                            <div class="card" style="margin-bottom:0">C. 识别干系人</div>
+                            <div class="card" style="margin-bottom:0">D. 制定风险管理计划</div>
+                        </div>
+                    </div>
+                    <div class="card">
+                        <div class="flex-between" style="margin-bottom:8px">
+                            <span class="tag tag-green">✓ 正确</span>
+                            <span class="ai-badge">AI 解析</span>
+                        </div>
+                        <div style="font-size:13px;line-height:1.5;color:#666">
+                            项目范围管理的核心过程包括：规划范围管理、收集需求、定义范围、<b>创建WBS</b>、确认范围、控制范围。创建WBS是将项目可交付成果分解为更小、更易于管理的工作包的关键过程。
+                        </div>
+                    </div>
+                    <button class="btn-primary" style="margin-top:12px">下一题</button>
+                `
+            },
+            case: {
+                title: '案例分析',
+                html: `
+                    <div class="card">
+                        <div class="section-title">📋 案例列表</div>
+                        <div style="font-size:13px;color:#999;margin-bottom:12px">历年真题 · 3 题/套 · 90 分钟</div>
+                        <div class="card" style="border-left:4px solid #1A6FFF;margin-bottom:8px">
+                            <div style="font-size:14px;font-weight:600">2024年5月真题 — 案例一</div>
+                            <div style="font-size:12px;color:#999;margin-top:4px">进度管理 · 25分 · <span class="tag tag-green">已作答</span></div>
+                        </div>
+                        <div class="card" style="border-left:4px solid #E5E5E5;margin-bottom:8px">
+                            <div style="font-size:14px;font-weight:600">2024年5月真题 — 案例二</div>
+                            <div style="font-size:12px;color:#999;margin-top:4px">成本管理 · 25分 · 未作答</div>
+                        </div>
+                        <div class="card" style="border-left:4px solid #E5E5E5">
+                            <div style="font-size:14px;font-weight:600">2024年5月真题 — 案例三</div>
+                            <div style="font-size:12px;color:#999;margin-top:4px">合同管理 · 25分 · 未作答</div>
+                        </div>
+                    </div>
+                `
+            },
+            essay: {
+                title: '论文',
+                html: `
+                    <div class="card">
+                        <div class="section-title">📝 论文题目列表</div>
+                        <div style="font-size:13px;color:#999;margin-bottom:12px">历年真题 · 2500-3500字 · 120分钟</div>
+                        <div class="card" style="border-left:4px solid #22C55E;margin-bottom:8px">
+                            <div style="font-size:14px;font-weight:600">论信息系统项目的范围管理</div>
+                            <div style="font-size:12px;color:#999;margin-top:4px">2024年5月 · <span class="tag tag-green">已批改 68分</span></div>
+                        </div>
+                        <div class="card" style="border-left:4px solid #FF8A3D;margin-bottom:8px">
+                            <div style="font-size:14px;font-weight:600">论信息系统项目的风险管理</div>
+                            <div style="font-size:12px;color:#999;margin-top:4px">2023年5月 · <span class="tag tag-orange">草稿</span></div>
+                        </div>
+                        <div class="card" style="border-left:4px solid #E5E5E5">
+                            <div style="font-size:14px;font-weight:600">论信息系统项目的质量管理</div>
+                            <div style="font-size:12px;color:#999;margin-top:4px">2022年5月 · 未作答</div>
+                        </div>
+                    </div>
+                `
+            },
+            profile: {
+                title: '我的',
+                html: `
+                    <div class="card">
+                        <div class="flex-row" style="align-items:center;margin-bottom:12px">
+                            <div style="width:48px;height:48px;border-radius:24px;background:#1A6FFF;color:#FFF;display:flex;align-items:center;justify-content:center;font-size:20px;font-weight:600">张</div>
+                            <div style="flex:1">
+                                <div style="font-size:16px;font-weight:600">张三</div>
+                                <div style="font-size:12px;color:#999">备考：信息系统项目管理师</div>
+                            </div>
+                            <span class="tag tag-orange">免费用户</span>
+                        </div>
+                    </div>
+                    <div class="card">
+                        <div class="flex-row">
+                            <div style="flex:1;text-align:center">
+                                <div style="font-size:18px;font-weight:700">32h</div>
+                                <div style="font-size:11px;color:#999">学习时长</div>
+                            </div>
+                            <div style="flex:1;text-align:center">
+                                <div style="font-size:18px;font-weight:700">420</div>
+                                <div style="font-size:11px;color:#999">答题数</div>
+                            </div>
+                            <div style="flex:1;text-align:center">
+                                <div style="font-size:18px;font-weight:700">68</div>
+                                <div style="font-size:11px;color:#999">论文最高分</div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="card">
+                        <div class="section-title">升级会员</div>
+                        <div style="font-size:13px;color:#666;margin-bottom:12px">解锁AI案例分析 + AI论文批改 + 无限追问</div>
+                        <button class="btn-primary" style="background:linear-gradient(135deg,#FF8A3D,#FF6B00)">49元/月 · 立即开通</button>
+                        <div style="text-align:center;font-size:11px;color:#999;margin-top:8px">3天免费试用 · 随时取消</div>
+                    </div>
+                `
+            }
+        };
+
+        function renderPage(pageId) {
+            const page = pages[pageId];
+            if (!page) return;
+            document.getElementById('navTitle').textContent = page.title;
+            document.getElementById('pageContent').innerHTML = page.html;
+            document.querySelectorAll('.tab-item').forEach(el => el.classList.remove('active'));
+            const tabs = document.querySelectorAll('.tab-item');
+            const indexMap = { home: 0, quiz: 1, case: 2, essay: 3, profile: 4 };
+            tabs[indexMap[pageId]].classList.add('active');
+        }
+
+        renderPage('home');
+    </script>
+</body>
+</html>
